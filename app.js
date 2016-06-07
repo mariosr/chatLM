@@ -6,7 +6,7 @@ var express = require('express')
   , io = require('socket.io').listen(server)
 ;
 
-const SECRET = 'Ntalk', KEY = 'ntalk.sid'
+const KEY = 'connect.sid', SECRET = 'express'
     , MAX_AGE = {maxAge: 60 * 60 * 1000}
     , GZIP_LVL = {level: 9, memLevel: 9};
 
@@ -28,11 +28,6 @@ app.use(express.static(__dirname + '/public', MAX_AGE));
 app.use(error.notFound);
 app.use(error.serverError);
 
-io.enable('browser client cache');
-io.enable('browser client minification');
-io.enable('browser client etag');
-io.enable('browser client gzip');
-io.set('log level', 1);
 io.set('authorization', function(data, accept) {
   cookie(data, {}, function(err) {
     var sessionID = data.signedCookies[KEY];

@@ -1,4 +1,8 @@
- var socket = io();
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+<script>
+  var socket = io.connect('http://localhost:3000');
 
 $(function() {
   var FADE_TIME = 150; // ms
@@ -229,7 +233,7 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
+    var message = "Welcome to LeadMark chat";
     log(message, {
       prepend: true
     });
@@ -293,6 +297,10 @@ $(function() {
     socket.emit('switchRoom', room);
   }
   //switch user
-  function switchRoom(id){
+  function switchUser(id){
     socket.emit('switchUser', id);
   }
+
+
+
+</script>

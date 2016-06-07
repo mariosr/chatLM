@@ -1,6 +1,9 @@
 module.exports = function(io) {
 
-    var sockets = io.sockets;
+/*
+  O username e id nao irao do socket, vc pegara eles no php com jQuery
+  e ira usá-los como identificadores no server socket
+*/
 
 // usernames which are currently connected to the chat
 var usernames = {};
@@ -8,17 +11,17 @@ var numUsers = 0;
 // rooms which are currently available in chat
 var rooms = ['room1','room2','room3'];
 
-sockets.on('connection', function (socket) {
-  var addedUser = false;
+io.sockets.on('connection', function (socket) {
 
+var addedUser = false;
 var session = socket.handshake.session;
-username  = session.username;
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
+
     // we tell the client to execute 'new message'
     socket.broadcast.to(socket.room).emit('new message', {
-      username: username,
+      username: socket.username,
       message: data
     });
   });
@@ -36,7 +39,7 @@ username  = session.username;
     socket.username = username;
 
     // add the client's username to the global list
-    usernames[username] = username;
+    usernames[socket.id] = username;
     ++numUsers;
     addedUser = true;
     socket.emit('login', {
@@ -48,22 +51,27 @@ username  = session.username;
       username: socket.username,
       numUsers: numUsers
     });
-    
+
     socket.emit('updaterooms', rooms, 'room1');
+
+
+    var usernamesAux =  [].concat(usernames || []);
+    console.log(usernamesAux)
+
     socket.broadcast.emit('updateusers', usernames);
 
   });
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    socket.broadcast.emit('typing', {
+    socket.broadcast.to(socket.room).emit('typing', {
       username: socket.username
     });
   });
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    socket.broadcast.emit('stop typing', {
+    socket.broadcast.to(socket.room).emit('stop typing', {
       username: socket.username
     });
   });
@@ -71,14 +79,13 @@ username  = session.username;
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {
     // remove the username from global usernames list
+
     if (addedUser) {
-      delete usernames[socket.username];
+      delete usernames[socket.id];
       --numUsers;
 
       // update list of users in chat, client-side
       socket.broadcast.emit('updateusers', usernames);
-
-      console.log(socket.id)
 
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
@@ -116,7 +123,6 @@ username  = session.username;
 
     socket.emit('updaterooms', rooms, newroom);
   });
-
 
 });
 

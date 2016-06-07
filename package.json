@@ -7,11 +7,11 @@
     "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha test/*.js"
   },
   "dependencies": {
+    "ejs": "0.8.4",
     "express": "3.3.3",
     "express-load": "1.1.7",
-    "ejs": "0.8.4",
-    "socket.io": "0.9.14",
-    "forever-monitor": "1.2.2"
+    "forever-monitor": "1.2.2", 
+    "socket.io": "0.9.14"
   },
   "devDependencies": {
     "mocha": "*",
